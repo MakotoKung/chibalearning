@@ -58,8 +58,9 @@ const RoadmapNode = z.object({
 const RoadmapOutput = z.object({
   title: z.string(),
   summary: z.string(),
-  nodes: z.array(RoadmapNode).min(6).max(12),
+  nodes: z.array(RoadmapNode),
 });
+
 
 export const buildRoadmap = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => z.object({ goal: z.string().min(2) }).parse(input))
