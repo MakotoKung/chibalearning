@@ -77,23 +77,35 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { title: "PixelPath — เส้นทางเรียนรู้สายอาชีพด้วย AI" },
+      {
+        name: "description",
+        content:
+          "AI ช่วยกำหนดว่าอาชีพที่คุณอยากเป็นต้องเรียนอะไร แล้วไล่เรียนทีละ node สไตล์เกมพิกเซล 16-bit",
+      },
+      { property: "og:title", content: "PixelPath — เส้นทางเรียนรู้สายอาชีพด้วย AI" },
+      {
+        property: "og:description",
+        content: "Roadmap การเรียนจาก AI, Code Lab, Quiz, ตัวละครพิกเซล และ Certificate",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:site", content: "@Lovable" },
     ],
     links: [
       {
         rel: "stylesheet",
         href: appCss,
       },
+      { rel: "preconnect", href: "https://fonts.googleapis.com" },
+      { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
+      {
+        rel: "stylesheet",
+        href: "https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&family=IBM+Plex+Sans+Thai:wght@400;500;600&display=swap",
+      },
       { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
     ],
   }),
+
   shellComponent: RootShell,
   component: RootComponent,
   notFoundComponent: NotFoundComponent,
