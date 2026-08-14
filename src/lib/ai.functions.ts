@@ -121,15 +121,21 @@ export const buildLesson = createServerFn({ method: "POST" })
       schema: LessonOutput,
       system:
         `เขียนบทเรียนหนึ่งระดับสำหรับผู้เรียนที่อยากเป็น ${data.goal}. ${TUTOR_STYLE}\n` +
-        "sections ควรมี 3-4 หัวข้อ อธิบายเข้าใจง่าย มีตัวอย่างโค้ดใน markdown code block ได้ " +
+        "sections ต้องมี 3-4 หัวข้อ (ห้ามน้อยกว่า 3) อธิบายเข้าใจง่าย มีตัวอย่างโค้ดใน markdown code block ได้ " +
+        "keyPoints ต้องมี 3-5 ข้อ " +
         "ถ้าเป็นเนื้อหาสาย coding ให้ hasCodeLab = true, language = 'javascript', starterCode เป็น JavaScript ที่รันได้ใน browser ด้วย console.log " +
         "และ challenge เป็นโจทย์สั้น ๆ ให้ผู้เรียนแก้ในโค้ด. ถ้าไม่ใช่ coding ให้ hasCodeLab = false, language = 'none', starterCode = '' " +
-        "quiz ต้องมี 4 ตัวเลือกและ answerIndex เป็น index (0-3) ของคำตอบที่ถูก",
+        "quiz ต้องมี 4 ข้อพอดี (ห้ามน้อยกว่า 4) แต่ละข้อมี choices 4 ตัวเลือกพอดี และ answerIndex เป็น index (0-3) ของคำตอบที่ถูก",
       prompt: `หัวข้อ: ${data.title}\nหมวด: ${data.subject}\nรายละเอียด: ${data.description}`,
     });
 
-    return result.object;
+    const lesson = result.object;
+    return {
+      ...lesson,
+      quiz: lesson.quiz.filter((q) => q.choices.length === 4).slice(0, 5),
+    };
   });
+
 
 export const askTutor = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) =>
