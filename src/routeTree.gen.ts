@@ -10,33 +10,115 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ArcadeRouteImport } from './routes/arcade'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as CertificateRouteImport } from './routes/certificate'
+import { Route as CharacterRouteImport } from './routes/character'
+import { Route as PathRouteImport } from './routes/path'
+import { Route as LearnNodeIndexRouteImport } from './routes/learn.$nodeIndex'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ArcadeRoute = ArcadeRouteImport.update({
+  id: '/arcade',
+  path: '/arcade',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CertificateRoute = CertificateRouteImport.update({
+  id: '/certificate',
+  path: '/certificate',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CharacterRoute = CharacterRouteImport.update({
+  id: '/character',
+  path: '/character',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PathRoute = PathRouteImport.update({
+  id: '/path',
+  path: '/path',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LearnNodeIndexRoute = LearnNodeIndexRouteImport.update({
+  id: '/learn/$nodeIndex',
+  path: '/learn/$nodeIndex',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/arcade': typeof ArcadeRoute
+  '/auth': typeof AuthRoute
+  '/certificate': typeof CertificateRoute
+  '/character': typeof CharacterRoute
+  '/path': typeof PathRoute
+  '/learn/$nodeIndex': typeof LearnNodeIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/arcade': typeof ArcadeRoute
+  '/auth': typeof AuthRoute
+  '/certificate': typeof CertificateRoute
+  '/character': typeof CharacterRoute
+  '/path': typeof PathRoute
+  '/learn/$nodeIndex': typeof LearnNodeIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/arcade': typeof ArcadeRoute
+  '/auth': typeof AuthRoute
+  '/certificate': typeof CertificateRoute
+  '/character': typeof CharacterRoute
+  '/path': typeof PathRoute
+  '/learn/$nodeIndex': typeof LearnNodeIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/arcade'
+    | '/auth'
+    | '/certificate'
+    | '/character'
+    | '/path'
+    | '/learn/$nodeIndex'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/arcade'
+    | '/auth'
+    | '/certificate'
+    | '/character'
+    | '/path'
+    | '/learn/$nodeIndex'
+  id:
+    | '__root__'
+    | '/'
+    | '/arcade'
+    | '/auth'
+    | '/certificate'
+    | '/character'
+    | '/path'
+    | '/learn/$nodeIndex'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ArcadeRoute: typeof ArcadeRoute
+  AuthRoute: typeof AuthRoute
+  CertificateRoute: typeof CertificateRoute
+  CharacterRoute: typeof CharacterRoute
+  PathRoute: typeof PathRoute
+  LearnNodeIndexRoute: typeof LearnNodeIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +130,59 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/arcade': {
+      id: '/arcade'
+      path: '/arcade'
+      fullPath: '/arcade'
+      preLoaderRoute: typeof ArcadeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/certificate': {
+      id: '/certificate'
+      path: '/certificate'
+      fullPath: '/certificate'
+      preLoaderRoute: typeof CertificateRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/character': {
+      id: '/character'
+      path: '/character'
+      fullPath: '/character'
+      preLoaderRoute: typeof CharacterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/path': {
+      id: '/path'
+      path: '/path'
+      fullPath: '/path'
+      preLoaderRoute: typeof PathRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/learn/$nodeIndex': {
+      id: '/learn/$nodeIndex'
+      path: '/learn/$nodeIndex'
+      fullPath: '/learn/$nodeIndex'
+      preLoaderRoute: typeof LearnNodeIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ArcadeRoute: ArcadeRoute,
+  AuthRoute: AuthRoute,
+  CertificateRoute: CertificateRoute,
+  CharacterRoute: CharacterRoute,
+  PathRoute: PathRoute,
+  LearnNodeIndexRoute: LearnNodeIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
