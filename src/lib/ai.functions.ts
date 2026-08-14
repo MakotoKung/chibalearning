@@ -83,25 +83,23 @@ export const buildRoadmap = createServerFn({ method: "POST" })
 
 const LessonOutput = z.object({
   intro: z.string(),
-  sections: z.array(z.object({ heading: z.string(), body: z.string() })).min(2),
+  sections: z.array(z.object({ heading: z.string(), body: z.string() })),
   keyPoints: z.array(z.string()),
   hasCodeLab: z.boolean(),
   language: z.enum(["javascript", "none"]),
   starterCode: z.string(),
   challenge: z.string(),
   solutionCode: z.string(),
-  quiz: z
-    .array(
-      z.object({
-        question: z.string(),
-        choices: z.array(z.string()).length(4),
-        answerIndex: z.number(),
-        explanation: z.string(),
-      }),
-    )
-    .min(3)
-    .max(5),
+  quiz: z.array(
+    z.object({
+      question: z.string(),
+      choices: z.array(z.string()),
+      answerIndex: z.number(),
+      explanation: z.string(),
+    }),
+  ),
 });
+
 
 export const buildLesson = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) =>
