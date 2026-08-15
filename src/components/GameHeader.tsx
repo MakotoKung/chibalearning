@@ -1,16 +1,18 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { Gamepad2, LogOut, Map, MessageSquare, ScrollText } from "lucide-react";
+import { Gamepad2, LogOut, Map, MessageSquare, ScrollText, Swords } from "lucide-react";
 
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { fetchProfile } from "@/lib/game-data";
 import { avatarSrc } from "@/lib/avatars";
+import chichiLogo from "@/assets/chichi-logo.png.asset.json";
 
 const NAV = [
-  { to: "/", label: "Guide", icon: MessageSquare },
+  { to: "/", label: "ChiChi", icon: MessageSquare },
   { to: "/path", label: "Path", icon: Map },
-  { to: "/arcade", label: "Arcade", icon: Gamepad2 },
+  { to: "/ranking", label: "Rank", icon: Swords },
+  { to: "/arcade", label: "Cards", icon: Gamepad2 },
   { to: "/certificate", label: "Cert", icon: ScrollText },
 ] as const;
 
@@ -27,8 +29,17 @@ export function GameHeader() {
   return (
     <header className="border-border bg-surface/95 sticky top-0 z-40 border-b-4 backdrop-blur">
       <div className="mx-auto flex max-w-7xl flex-wrap items-center gap-3 px-4 py-3">
-        <Link to="/" className="pixel-text text-primary mr-2 text-[0.7rem] sm:text-xs">
-          PIXEL<span className="text-gold">PATH</span>
+        <Link to="/" className="mr-2 flex items-center gap-2">
+          <img
+            src={chichiLogo.url}
+            alt="โลโก้ PixelPath รูปหัวแมวพิกเซล"
+            width={36}
+            height={36}
+            className="pixel-inset h-9 w-9 p-0.5"
+          />
+          <span className="pixel-text text-primary text-[0.7rem] sm:text-xs">
+            PIXEL<span className="text-gold">PATH</span>
+          </span>
         </Link>
 
         <nav className="flex flex-1 flex-wrap items-center gap-1">
