@@ -15,6 +15,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as CertificateRouteImport } from './routes/certificate'
 import { Route as CharacterRouteImport } from './routes/character'
 import { Route as PathRouteImport } from './routes/path'
+import { Route as RankingRouteImport } from './routes/ranking'
 import { Route as LearnNodeIndexRouteImport } from './routes/learn.$nodeIndex'
 
 const IndexRoute = IndexRouteImport.update({
@@ -47,6 +48,11 @@ const PathRoute = PathRouteImport.update({
   path: '/path',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RankingRoute = RankingRouteImport.update({
+  id: '/ranking',
+  path: '/ranking',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LearnNodeIndexRoute = LearnNodeIndexRouteImport.update({
   id: '/learn/$nodeIndex',
   path: '/learn/$nodeIndex',
@@ -60,6 +66,7 @@ export interface FileRoutesByFullPath {
   '/certificate': typeof CertificateRoute
   '/character': typeof CharacterRoute
   '/path': typeof PathRoute
+  '/ranking': typeof RankingRoute
   '/learn/$nodeIndex': typeof LearnNodeIndexRoute
 }
 export interface FileRoutesByTo {
@@ -69,6 +76,7 @@ export interface FileRoutesByTo {
   '/certificate': typeof CertificateRoute
   '/character': typeof CharacterRoute
   '/path': typeof PathRoute
+  '/ranking': typeof RankingRoute
   '/learn/$nodeIndex': typeof LearnNodeIndexRoute
 }
 export interface FileRoutesById {
@@ -79,6 +87,7 @@ export interface FileRoutesById {
   '/certificate': typeof CertificateRoute
   '/character': typeof CharacterRoute
   '/path': typeof PathRoute
+  '/ranking': typeof RankingRoute
   '/learn/$nodeIndex': typeof LearnNodeIndexRoute
 }
 export interface FileRouteTypes {
@@ -90,6 +99,7 @@ export interface FileRouteTypes {
     | '/certificate'
     | '/character'
     | '/path'
+    | '/ranking'
     | '/learn/$nodeIndex'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -99,6 +109,7 @@ export interface FileRouteTypes {
     | '/certificate'
     | '/character'
     | '/path'
+    | '/ranking'
     | '/learn/$nodeIndex'
   id:
     | '__root__'
@@ -108,6 +119,7 @@ export interface FileRouteTypes {
     | '/certificate'
     | '/character'
     | '/path'
+    | '/ranking'
     | '/learn/$nodeIndex'
   fileRoutesById: FileRoutesById
 }
@@ -118,6 +130,7 @@ export interface RootRouteChildren {
   CertificateRoute: typeof CertificateRoute
   CharacterRoute: typeof CharacterRoute
   PathRoute: typeof PathRoute
+  RankingRoute: typeof RankingRoute
   LearnNodeIndexRoute: typeof LearnNodeIndexRoute
 }
 
@@ -165,6 +178,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PathRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/ranking': {
+      id: '/ranking'
+      path: '/ranking'
+      fullPath: '/ranking'
+      preLoaderRoute: typeof RankingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/learn/$nodeIndex': {
       id: '/learn/$nodeIndex'
       path: '/learn/$nodeIndex'
@@ -182,6 +202,7 @@ const rootRouteChildren: RootRouteChildren = {
   CertificateRoute: CertificateRoute,
   CharacterRoute: CharacterRoute,
   PathRoute: PathRoute,
+  RankingRoute: RankingRoute,
   LearnNodeIndexRoute: LearnNodeIndexRoute,
 }
 export const routeTree = rootRouteImport
