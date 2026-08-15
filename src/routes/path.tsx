@@ -69,10 +69,10 @@ function PathPage() {
           <div className="pixel-panel p-6 text-center">
             <h1 className="text-primary text-sm">ยังไม่มีเส้นทาง</h1>
             <p className="text-muted-foreground mt-3 text-sm">
-              คุยกับ AI Guide ก่อน เพื่อให้สร้าง roadmap ให้คุณ
+              คุยกับ ChiChi ก่อน เพื่อให้สร้าง roadmap ให้คุณ
             </p>
             <Link to="/" className="pixel-btn bg-primary text-primary-foreground mt-4 inline-block">
-              ไปคุยกับ GUIDE
+              ไปคุยกับ CHICHI
             </Link>
           </div>
         )}

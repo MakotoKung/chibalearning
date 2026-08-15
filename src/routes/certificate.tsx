@@ -95,7 +95,7 @@ function CertificatePage() {
           <p className="text-muted-foreground mt-4 text-sm">
             ยังไม่มีเส้นทางการเรียน —{" "}
             <Link to="/" className="text-primary">
-              คุยกับ Guide ก่อน
+              คุยกับ ChiChi ก่อน
             </Link>
           </p>
         )}
