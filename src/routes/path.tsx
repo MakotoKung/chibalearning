@@ -1,12 +1,13 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
-import { Check, Lock, Loader2, Play } from "lucide-react";
+import { Check, Lock, Loader2 } from "lucide-react";
 
 import { GameHeader } from "@/components/GameHeader";
 import { AskAiFab } from "@/components/AskAiFab";
 import { useAuth } from "@/hooks/useAuth";
 import { fetchActiveRoadmap, fetchProgress } from "@/lib/game-data";
+import chichiLogo from "@/assets/chichi-logo.png.asset.json";
 
 export const Route = createFileRoute("/path")({
   head: () => ({
