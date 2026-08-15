@@ -17,12 +17,20 @@ export type Roadmap = {
   created_at: string;
 };
 
+export type OpenTask = {
+  kind: "code" | "calc";
+  prompt: string;
+  starterCode: string;
+  expectedAnswer: string;
+  explanation: string;
+};
+
 export type LessonContent = {
   intro: string;
   sections: { heading: string; body: string }[];
   keyPoints: string[];
   hasCodeLab: boolean;
-  language: "javascript" | "none";
+  language: string;
   starterCode: string;
   challenge: string;
   solutionCode: string;
@@ -32,6 +40,8 @@ export type LessonContent = {
     answerIndex: number;
     explanation: string;
   }[];
+  openChallenge?: OpenTask;
+  bonusExercise?: OpenTask;
 };
 
 export async function fetchActiveRoadmap(): Promise<Roadmap | null> {
