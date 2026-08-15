@@ -10,7 +10,7 @@ import { advisorChat, buildRoadmap } from "@/lib/ai.functions";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import heroBg from "@/assets/hero-pixel.jpg";
-import knight from "@/assets/avatar-knight.png";
+import chichiLogo from "@/assets/chichi-logo.png.asset.json";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -19,7 +19,7 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "คุยกับ AI Guide เพื่อรู้ว่าอาชีพที่อยากเป็นต้องเรียนอะไรบ้าง แล้วไล่เรียนทีละ node สไตล์เกมพิกเซล 16-bit",
+          "คุยกับ ChiChi (AI แมวพิกเซล) เพื่อรู้ว่าอาชีพที่อยากเป็นต้องเรียนอะไรบ้าง แล้วไล่เรียนทีละ node สไตล์เกมพิกเซล 16-bit",
       },
       { property: "og:title", content: "PixelPath — เส้นทางเรียนรู้สายอาชีพด้วย AI" },
       {
@@ -28,7 +28,7 @@ export const Route = createFileRoute("/")({
       },
     ],
   }),
-  component: GuidePage,
+  component: ChiChiPage,
 });
 
 type Msg = { role: "user" | "assistant"; content: string };
@@ -36,12 +36,25 @@ type Msg = { role: "user" | "assistant"; content: string };
 const OPENER: Msg = {
   role: "assistant",
   content:
-    "ยินดีต้อนรับสู่ PixelPath! บอก Guide หน่อยว่าอยากเป็นอะไร เช่น *Frontend Developer*, *Data Scientist*, *Game Dev* หรือเล่าความสนใจของคุณมาก็ได้",
+    "ยินดีต้อนรับสู่ PixelPath! บอก ChiChi หน่อยว่าอยากเป็นอะไร เช่น *Frontend Developer*, *Data Scientist*, *Game Dev* หรือเล่าความสนใจของคุณมาก็ได้",
 };
 
 const QUICK = ["Frontend Developer", "Data Scientist", "Game Developer", "Biotech Researcher"];
 
-function GuidePage() {
+const LEVELS = [
+  { label: "มือใหม่ 0%", text: "พื้นฐานของฉัน: เริ่มจากศูนย์ ยังไม่เคยเขียนโค้ดเลย" },
+  { label: "พอรู้บ้าง", text: "พื้นฐานของฉัน: เคยเขียนโค้ดเล็กน้อย เข้าใจ variable กับ loop" },
+  { label: "ปานกลาง", text: "พื้นฐานของฉัน: เขียนโปรแกรมเล็ก ๆ ได้เอง เคยทำโปรเจกต์" },
+  { label: "ขั้นสูง", text: "พื้นฐานของฉัน: ทำงาน/ฝึกงานสายนี้มาแล้ว อยากต่อยอดเชิงลึก" },
+];
+
+const TIMES = [
+  { label: "1-3 ชม./สัปดาห์", text: "เวลาที่ว่าง: 1-3 ชั่วโมงต่อสัปดาห์" },
+  { label: "4-7 ชม./สัปดาห์", text: "เวลาที่ว่าง: 4-7 ชั่วโมงต่อสัปดาห์" },
+  { label: "8+ ชม./สัปดาห์", text: "เวลาที่ว่าง: มากกว่า 8 ชั่วโมงต่อสัปดาห์" },
+];
+
+function ChiChiPage() {
   const chat = useServerFn(advisorChat);
   const makeRoadmap = useServerFn(buildRoadmap);
   const navigate = useNavigate();
@@ -69,7 +82,7 @@ function GuidePage() {
       setMessages((m) => [...m, { role: "assistant", content: res.reply }]);
       if (res.readyToBuild && res.careerGoal) setGoal(res.careerGoal);
     } catch {
-      toast.error("Guide ตอบไม่ได้ตอนนี้ ลองอีกครั้ง");
+      toast.error("ChiChi ตอบไม่ได้ตอนนี้ ลองอีกครั้ง");
     } finally {
       setBusy(false);
     }
@@ -123,7 +136,7 @@ function GuidePage() {
         <div className="relative mx-auto max-w-3xl px-4 py-8">
           <div className="mb-6 text-center">
             <h1 className="text-primary text-base sm:text-xl">
-              อยากเป็นอะไร? <span className="text-gold">Guide</span> จะจัดเส้นทางให้
+              อยากเป็นอะไร? <span className="text-gold">ChiChi</span> จะจัดเส้นทางให้
             </h1>
             <p className="text-muted-foreground mt-3 text-sm">
               คุยกับ AI สั้น ๆ แล้วรับ roadmap ที่ตัดสิ่งที่ไม่จำเป็นออกให้หมด
@@ -136,8 +149,8 @@ function GuidePage() {
                 m.role === "assistant" ? (
                   <div key={i} className="flex gap-3">
                     <img
-                      src={knight}
-                      alt="AI Guide"
+                      src={chichiLogo.url}
+                      alt="ChiChi AI แมวพิกเซล"
                       width={40}
                       height={40}
                       loading="lazy"
@@ -158,7 +171,7 @@ function GuidePage() {
               )}
               {busy && (
                 <div className="text-primary flex items-center gap-2 text-sm">
-                  <Loader2 className="h-4 w-4 animate-spin" /> Guide กำลังคิด
+                  <Loader2 className="h-4 w-4 animate-spin" /> ChiChi กำลังคิด
                   <span className="blink-cursor">▮</span>
                 </div>
               )}
@@ -217,6 +230,43 @@ function GuidePage() {
                 {q}
               </button>
             ))}
+          </div>
+
+          <div className="mt-5 space-y-3">
+            <div>
+              <p className="pixel-text text-muted-foreground mb-2 text-[0.45rem]">
+                เลือกระดับพื้นฐานของคุณ (หรือพิมพ์เองก็ได้)
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {LEVELS.map((l) => (
+                  <button
+                    key={l.label}
+                    onClick={() => send(l.text)}
+                    disabled={busy}
+                    className="pixel-inset hover:text-gold px-3 py-2 text-sm"
+                  >
+                    {l.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div>
+              <p className="pixel-text text-muted-foreground mb-2 text-[0.45rem]">
+                เวลาที่ว่างเรียนต่อสัปดาห์
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {TIMES.map((t) => (
+                  <button
+                    key={t.label}
+                    onClick={() => send(t.text)}
+                    disabled={busy}
+                    className="pixel-inset hover:text-primary px-3 py-2 text-sm"
+                  >
+                    {t.label}
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </main>

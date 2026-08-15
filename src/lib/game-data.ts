@@ -17,12 +17,20 @@ export type Roadmap = {
   created_at: string;
 };
 
+export type OpenTask = {
+  kind: "code" | "calc";
+  prompt: string;
+  starterCode: string;
+  expectedAnswer: string;
+  explanation: string;
+};
+
 export type LessonContent = {
   intro: string;
   sections: { heading: string; body: string }[];
   keyPoints: string[];
   hasCodeLab: boolean;
-  language: "javascript" | "none";
+  language: string;
   starterCode: string;
   challenge: string;
   solutionCode: string;
@@ -32,6 +40,8 @@ export type LessonContent = {
     answerIndex: number;
     explanation: string;
   }[];
+  openChallenge?: OpenTask;
+  bonusExercise?: OpenTask;
 };
 
 export async function fetchActiveRoadmap(): Promise<Roadmap | null> {
@@ -116,4 +126,49 @@ export async function completeNode(params: {
     .from("profiles")
     .update({ xp: (profile?.xp ?? 0) + params.xpGain })
     .eq("id", params.userId);
+}
+
+export type LearnerStats = {
+  nodesCleared: number;
+  roadmapsCompleted: number;
+  perfectQuizzes: number;
+  xp: number;
+};
+
+/** สรุปสถิติผู้เรียนทั้งหมด สำหรับ Ranking board */
+export async function fetchLearnerStats(userId: string): Promise<LearnerStats> {
+  const [{ data: roadmaps, error: rErr }, { data: progress, error: pErr }, profile] =
+    await Promise.all([
+      supabase.from("roadmaps").select("id, nodes"),
+      supabase.from("node_progress").select("roadmap_id, node_index, quiz_score, quiz_total"),
+      fetchProfile(userId),
+    ]);
+  if (rErr) throw rErr;
+  if (pErr) throw pErr;
+
+  const rows = progress ?? [];
+  const perRoadmap = new Map<string, number>();
+  for (const row of rows) {
+    perRoadmap.set(row.roadmap_id, (perRoadmap.get(row.roadmap_id) ?? 0) + 1);
+  }
+
+  const roadmapsCompleted = (roadmaps ?? []).filter((r) => {
+    const nodeCount = ((r.nodes ?? []) as RoadmapNode[]).length;
+    return nodeCount > 0 && (perRoadmap.get(r.id) ?? 0) >= nodeCount;
+  }).length;
+
+  return {
+    nodesCleared: rows.length,
+    roadmapsCompleted,
+    perfectQuizzes: rows.filter((r) => r.quiz_total > 0 && r.quiz_score >= r.quiz_total).length,
+    xp: profile?.xp ?? 0,
+  };
+}
+
+export async function addXp(userId: string, amount: number) {
+  const profile = await fetchProfile(userId);
+  await supabase
+    .from("profiles")
+    .update({ xp: (profile?.xp ?? 0) + amount })
+    .eq("id", userId);
 }

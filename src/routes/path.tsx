@@ -1,12 +1,13 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
-import { Check, Lock, Loader2, Play } from "lucide-react";
+import { Check, Lock, Loader2 } from "lucide-react";
 
 import { GameHeader } from "@/components/GameHeader";
 import { AskAiFab } from "@/components/AskAiFab";
 import { useAuth } from "@/hooks/useAuth";
 import { fetchActiveRoadmap, fetchProgress } from "@/lib/game-data";
+import chichiLogo from "@/assets/chichi-logo.png.asset.json";
 
 export const Route = createFileRoute("/path")({
   head: () => ({
@@ -69,10 +70,10 @@ function PathPage() {
           <div className="pixel-panel p-6 text-center">
             <h1 className="text-primary text-sm">ยังไม่มีเส้นทาง</h1>
             <p className="text-muted-foreground mt-3 text-sm">
-              คุยกับ AI Guide ก่อน เพื่อให้สร้าง roadmap ให้คุณ
+              คุยกับ ChiChi ก่อน เพื่อให้สร้าง roadmap ให้คุณ
             </p>
             <Link to="/" className="pixel-btn bg-primary text-primary-foreground mt-4 inline-block">
-              ไปคุยกับ GUIDE
+              ไปคุยกับ CHICHI
             </Link>
           </div>
         )}
@@ -101,57 +102,78 @@ function PathPage() {
               )}
             </div>
 
-            <ol className="space-y-3">
+            <ol className="relative flex flex-col items-center gap-2">
               {roadmap.nodes.map((node, i) => {
                 const cleared = done.has(i);
                 const unlocked = i === 0 || done.has(i - 1);
+                // เยื้องซ้าย-ขวาเป็นเส้นทางคดเคี้ยวแบบ Duolingo
+                const offsets = [0, 68, 96, 68, 0, -68, -96, -68];
+                const dx = offsets[i % offsets.length]!;
+                const circle = cleared
+                  ? "bg-terminal text-background"
+                  : unlocked
+                    ? SUBJECT_COLOR[node.subject] ?? "bg-primary text-primary-foreground"
+                    : "bg-muted text-muted-foreground";
                 return (
-                  <li key={i} className={i % 2 === 0 ? "sm:pr-16" : "sm:pl-16"}>
-                    <div className="pixel-panel flex items-center gap-4 p-4">
-                      <div
-                        className={`flex h-12 w-12 shrink-0 items-center justify-center border-3 border-background ${
-                          cleared
-                            ? "bg-terminal text-background"
-                            : unlocked
-                              ? SUBJECT_COLOR[node.subject] ?? "bg-primary text-primary-foreground"
-                              : "bg-muted text-muted-foreground"
-                        }`}
-                      >
-                        {cleared ? (
-                          <Check className="h-5 w-5" />
-                        ) : unlocked ? (
-                          <span className="pixel-text text-[0.6rem]">{i + 1}</span>
-                        ) : (
-                          <Lock className="h-4 w-4" />
-                        )}
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <h2 className="text-foreground text-[0.6rem]">{node.title}</h2>
-                        <p className="text-muted-foreground mt-2 line-clamp-2 text-sm">
-                          {node.description}
-                        </p>
-                        <p className="pixel-text text-muted-foreground mt-2 text-[0.5rem]">
-                          {node.subject.toUpperCase()} · ~{node.estimatedHours}H
-                        </p>
-                      </div>
+                  <li
+                    key={i}
+                    className="flex w-full flex-col items-center"
+                    style={{ transform: `translateX(${dx / 2}px)` }}
+                  >
+                    {i > 0 && (
+                      <span
+                        aria-hidden
+                        className={`mb-1 h-8 w-2 ${cleared ? "bg-terminal/60" : "bg-border"}`}
+                      />
+                    )}
+                    <div className="group relative flex flex-col items-center">
                       {unlocked ? (
                         <Link
                           to="/learn/$nodeIndex"
                           params={{ nodeIndex: String(i) }}
-                          className="pixel-btn bg-primary text-primary-foreground flex items-center gap-2"
+                          aria-label={`ระดับ ${i + 1}: ${node.title}`}
+                          className={`flex h-20 w-20 items-center justify-center rounded-full border-4 border-background shadow-[0_6px_0_0_hsl(var(--border))] transition-transform hover:-translate-y-0.5 active:translate-y-1 ${circle}`}
                         >
-                          <Play className="h-3 w-3" />
-                          {cleared ? "REPLAY" : "START"}
+                          {cleared ? (
+                            <Check className="h-8 w-8" />
+                          ) : (
+                            <span className="pixel-text text-[0.7rem]">{i + 1}</span>
+                          )}
                         </Link>
                       ) : (
-                        <span className="pixel-text text-muted-foreground text-[0.5rem]">
-                          LOCKED
+                        <span
+                          aria-label={`ระดับ ${i + 1} ยังล็อกอยู่`}
+                          className={`flex h-20 w-20 items-center justify-center rounded-full border-4 border-background ${circle}`}
+                        >
+                          <Lock className="h-6 w-6" />
                         </span>
                       )}
+                      <div
+                        className="pixel-panel mt-2 max-w-[15rem] p-2 text-center"
+                        style={{ transform: `translateX(${-dx / 2}px)` }}
+                      >
+                        <p className="text-foreground text-[0.55rem]">{node.title}</p>
+                        <p className="pixel-text text-muted-foreground mt-2 text-[0.45rem]">
+                          {node.subject.toUpperCase()} · ~{node.estimatedHours}H
+                          {unlocked ? (cleared ? " · CLEARED" : " · เริ่มเลย") : " · LOCKED"}
+                        </p>
+                      </div>
                     </div>
                   </li>
                 );
               })}
+              <li className="mt-4 flex flex-col items-center">
+                <span aria-hidden className="mb-2 h-8 w-2 bg-border" />
+                <img
+                  src={chichiLogo.url}
+                  alt="ChiChi รออยู่ปลายทาง"
+                  width={72}
+                  height={72}
+                  loading="lazy"
+                  className="float-idle h-18 w-18"
+                />
+                <p className="pixel-text text-gold mt-2 text-[0.5rem]">GOAL: CERTIFICATE</p>
+              </li>
             </ol>
           </>
         )}

@@ -134,7 +134,7 @@ function AuthPage() {
         </button>
 
         <Link to="/" className="text-muted-foreground hover:text-primary mt-2 block text-center text-sm">
-          กลับไปคุยกับ Guide
+          กลับไปคุยกับ ChiChi
         </Link>
       </div>
     </main>

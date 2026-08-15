@@ -26,7 +26,7 @@ const ChatOutput = z.object({
   careerGoal: z.string(),
 });
 
-/** หน้าแรก: คุยกับ AI เพื่อหาเป้าหมายอาชีพ */
+/** หน้าแรก: คุยกับ ChiChi เพื่อหาเป้าหมายอาชีพ */
 export const advisorChat = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => ChatInput.parse(input))
   .handler(async ({ data }) => {
@@ -37,7 +37,8 @@ export const advisorChat = createServerFn({ method: "POST" })
       model: gateway(MODEL),
       schema: ChatOutput,
       system:
-        `คุณคือ "Guide" NPC ในเกม RPG ที่ช่วยผู้เรียนหาเส้นทางอาชีพสาย Coding และ Science. ${TUTOR_STYLE}\n` +
+        `คุณคือ "ChiChi" NPC แมวพิกเซลในเกม RPG ที่ช่วยผู้เรียนหาเส้นทางอาชีพสาย Coding และ Science. ${TUTOR_STYLE}\n` +
+        "แนะนำตัวว่าชื่อ ChiChi เสมอถ้าผู้เรียนถาม ห้ามเรียกตัวเองว่า Guide\n" +
         "หน้าที่: ถามคำถามสั้น ๆ ทีละ 1-2 ข้อ (ความสนใจ, พื้นฐานที่มี, เวลาที่ว่างต่อสัปดาห์, เป้าหมายปลายทาง) " +
         "เมื่อข้อมูลพอที่จะสร้าง roadmap ให้ตั้ง readyToBuild = true และใส่ careerGoal เป็นชื่ออาชีพที่ชัดเจน เช่น 'Frontend Developer (React)' " +
         "ถ้ายังไม่พอ ให้ readyToBuild = false และ careerGoal = ''. reply ต้องไม่เกิน 4 ประโยค",
@@ -81,12 +82,25 @@ export const buildRoadmap = createServerFn({ method: "POST" })
     return result.object;
   });
 
+const CODE_LANGUAGES = [
+  "javascript",
+  "typescript",
+  "python",
+  "java",
+  "cpp",
+  "csharp",
+  "go",
+  "sql",
+  "html",
+  "none",
+] as const;
+
 const LessonOutput = z.object({
   intro: z.string(),
   sections: z.array(z.object({ heading: z.string(), body: z.string() })),
   keyPoints: z.array(z.string()),
   hasCodeLab: z.boolean(),
-  language: z.enum(["javascript", "none"]),
+  language: z.enum(CODE_LANGUAGES),
   starterCode: z.string(),
   challenge: z.string(),
   solutionCode: z.string(),
@@ -98,6 +112,20 @@ const LessonOutput = z.object({
       explanation: z.string(),
     }),
   ),
+  openChallenge: z.object({
+    kind: z.enum(["code", "calc"]),
+    prompt: z.string(),
+    starterCode: z.string(),
+    expectedAnswer: z.string(),
+    explanation: z.string(),
+  }),
+  bonusExercise: z.object({
+    kind: z.enum(["code", "calc"]),
+    prompt: z.string(),
+    starterCode: z.string(),
+    expectedAnswer: z.string(),
+    explanation: z.string(),
+  }),
 });
 
 
@@ -122,10 +150,16 @@ export const buildLesson = createServerFn({ method: "POST" })
       system:
         `เขียนบทเรียนหนึ่งระดับสำหรับผู้เรียนที่อยากเป็น ${data.goal}. ${TUTOR_STYLE}\n` +
         "sections ต้องมี 3-4 หัวข้อ (ห้ามน้อยกว่า 3) อธิบายเข้าใจง่าย มีตัวอย่างโค้ดใน markdown code block ได้ " +
-        "keyPoints ต้องมี 3-5 ข้อ " +
-        "ถ้าเป็นเนื้อหาสาย coding ให้ hasCodeLab = true, language = 'javascript', starterCode เป็น JavaScript ที่รันได้ใน browser ด้วย console.log " +
-        "และ challenge เป็นโจทย์สั้น ๆ ให้ผู้เรียนแก้ในโค้ด. ถ้าไม่ใช่ coding ให้ hasCodeLab = false, language = 'none', starterCode = '' " +
-        "quiz ต้องมี 4 ข้อพอดี (ห้ามน้อยกว่า 4) แต่ละข้อมี choices 4 ตัวเลือกพอดี และ answerIndex เป็น index (0-3) ของคำตอบที่ถูก",
+        "keyPoints ต้องมี 3-5 ข้อ\n" +
+        "ถ้าเป็นเนื้อหาสาย coding ให้ hasCodeLab = true และเลือก language ให้ตรงกับภาษาที่หัวข้อนี้สอนจริง " +
+        "(เช่น Python ให้ 'python', Java ให้ 'java', C++ ให้ 'cpp', React/JS ให้ 'javascript', ฐานข้อมูลให้ 'sql') " +
+        "starterCode ต้องเป็นโค้ดภาษานั้นที่รันได้และพิมพ์ output ออกทาง stdout. " +
+        "ถ้าไม่ใช่ coding ให้ hasCodeLab = false, language = 'none', starterCode = ''\n" +
+        "quiz ต้องมี 4 ข้อพอดี (ห้ามน้อยกว่า 4) แต่ละข้อมี choices 4 ตัวเลือกพอดี และ answerIndex เป็น index (0-3) ของคำตอบที่ถูก\n" +
+        "openChallenge = ข้อเขียนตอบ 1 ข้อ: ถ้าเป็นสาย coding ให้ kind='code' " +
+        "โจทย์ให้เขียนโค้ดที่พิมพ์ output ออกมา และ expectedAnswer = output ที่ถูกต้องแบบสั้น ๆ บรรทัดเดียว " +
+        "ถ้าเป็นวิชาคำนวณ/วิทยาศาสตร์ ให้ kind='calc' โจทย์ให้คิดแล้วพิมพ์คำตอบ และ expectedAnswer = คำตอบสั้น ๆ (ตัวเลขหรือคำเดียว)\n" +
+        "bonusExercise = แบบฝึกหัดพิเศษ (ยากกว่า openChallenge) รูปแบบเดียวกัน สำหรับผู้ที่อยากได้ XP เพิ่ม",
       prompt: `หัวข้อ: ${data.title}\nหมวด: ${data.subject}\nรายละเอียด: ${data.description}`,
     });
 
@@ -153,10 +187,37 @@ export const askTutor = createServerFn({ method: "POST" })
     const result = await generateText({
       model: gateway(MODEL),
       system:
-        `คุณคือติวเตอร์ AI ในบทเรียน. ${TUTOR_STYLE} ตอบไม่เกิน 6 ประโยค ` +
+        `คุณคือ "ChiChi" ติวเตอร์แมวพิกเซลในบทเรียน. ${TUTOR_STYLE} ตอบไม่เกิน 6 ประโยค ` +
         `ถ้ามีโค้ดให้ใส่ใน markdown code block\nบริบทบทเรียน: ${data.context}`,
       prompt: data.question,
     });
 
     return { answer: result.text };
+  });
+
+/** รันโค้ดภาษาอื่นที่ browser รันเองไม่ได้ (Java, C++, SQL, ...) ด้วย AI compiler */
+export const runCodeRemote = createServerFn({ method: "POST" })
+  .inputValidator((input: unknown) =>
+    z
+      .object({
+        language: z.string().min(1),
+        code: z.string().min(1),
+      })
+      .parse(input),
+  )
+  .handler(async ({ data }) => {
+    const { generateObject } = await import("ai");
+    const gateway = createLovableAiGatewayProvider(requireGatewayKey());
+
+    const result = await generateObject({
+      model: gateway(MODEL),
+      schema: z.object({ stdout: z.string(), error: z.string() }),
+      system:
+        "คุณคือ compiler/interpreter จำลอง ทำหน้าที่รันโค้ดที่ได้รับแล้วส่งคืน stdout เท่านั้น " +
+        "ห้ามอธิบาย ห้ามใส่ markdown ถ้าโค้ดมี syntax error หรือ runtime error ให้ใส่ข้อความ error สั้น ๆ ใน error " +
+        "และ stdout = '' ถ้ารันสำเร็จให้ error = ''",
+      prompt: `ภาษา: ${data.language}\n\nโค้ด:\n${data.code}`,
+    });
+
+    return result.object;
   });
